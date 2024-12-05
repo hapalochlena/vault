@@ -1,0 +1,16 @@
+#* make job dependent on several dependsOn conditions:
+
+# actual pipeline file
+- template: "/templates/...@self"
+  parameters:
+    depends_on:
+    - audit_frontend
+    - audit_backend
+    - lint_test_frontend
+    - lint_test_backend
+
+# template
+jobs:
+- job: coverage
+  displayName: Coverage
+  dependsOn: ${{ parameters.depends_on }}

@@ -1,0 +1,26 @@
+
+# cicd.yml in pipeline templates
+
+- name: securityCheckCondition TRUE
+  type: string
+  default: >
+    or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), startsWith(variables['Build.SourceBranch'], 'refs/tags/release/'), eq(variables['Build.Reason'], 'PullRequest'))
+- name: unitTestsCondition  -WEG-
+  type: string
+  default: >
+    or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), startsWith(variables['Build.SourceBranch'], 'refs/tags/release/'), eq(variables['Build.Reason'], 'PullRequest'))
+- name: deployCondition  FALSE
+  type: string
+  default: >
+    or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), startsWith(variables['Build.SourceBranch'], 'refs/tags/release/'), eq(variables['Build.Reason'], 'PullRequest'))
+- name: pretendCondition  TRUE
+  type: string
+  default: >
+    eq(variables['Build.Reason'], 'PullRequest')
+
+- name: publishArtifactCondition
+  type: string
+  default: >
+    and(or(startsWith(variables['Build.SourceBranch'], 'refs/heads/release/'), startsWith(variables['Build.SourceBranch'], 'refs/tags/release/')), eq(variables['Build.Reason'], 'IndividualCI'))
+
+

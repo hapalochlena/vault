@@ -1,0 +1,21 @@
+name: $(BuildDefinitionName)_$(date:yyyMMdd)$(rev:.r)
+
+trigger: none
+pr: none
+
+variables:
+  - group: 'Library' # Azure DevOps Library
+  - name: blog
+    value: 'geralexgr.com' # variable points to this domain
+
+stages:
+  - stage: print_vars
+    jobs: 
+      - template: templates/generic_pipeline.yml
+        parameters:
+          myparam: "custom-parameter-root-pipeline"
+
+
+#! MAIN LOGIC is on the TEMPLATE PIPELINE !!!
+
+#! The specific pipeline is only to STORE VARIABLES & CONFIG PARAMETERS

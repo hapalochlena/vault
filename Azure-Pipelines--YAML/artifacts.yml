@@ -1,0 +1,79 @@
+ 
+#* PIPELINE Artifacts vs AZURE Artifacts
+
+#######################################################
+# Upload ZIP archive to pipeline artifact
+#######################################################
+- publish: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId)_${{ parameters.folder_name }}.zip"
+  displayName: "Upload package"
+  artifact: drop_${{ parameters.folder_name }}
+#######################################################
+# Upload ZIP archive to Azure artifact
+#######################################################
+- task: UniversalPackages@0 
+  displayName: "Publish artifact"
+  inputs:
+    command: publish
+    vstsFeedPublish: ${{ parameters.artifacts_feed_name }}
+    vstsFeedPackagePublish: project_${{ parameters.folder_name }}
+    ${{ if ne(parameters.version, '*') }}:
+      versionOption: custom
+      # has to be always unique
+      versionPublish: ${{ parameters.version }}
+            
+
+#* for reference mit filepaths, wie funktioniert zip etc.: dieser part kommt direkt davor:
+
+#######################################################
+# Create ZIP archive
+# Python is using custom folder - dist - due to the structure of the app
+#######################################################
+- task: ArchiveFiles@2
+  displayName: "Archive files"
+  inputs:
+    ${{ if eq(parameters.app_type, 'js') }}:
+      rootFolderOrFile: "$(System.DefaultWorkingDirectory)/${{ parameters.folder_name }}"
+    ${{ if eq(parameters.app_type, 'py') }}:
+      rootFolderOrFile: $(System.DefaultWorkingDirectory)/dist
+    includeRootFolder: false
+    archiveType: zip
+    archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)_${{ parameters.folder_name }}.zip
+    replaceExistingArchive: true
+
+
+#########################################################
+
+#* WEITERES BEISPIEL
+
+#######################################################
+# Run audit
+#######################################################
+- script: |
+    cd ./${{ parameters.folder_name }}
+    npm run audit > audit.txt
+    echo "Whitelisted:"
+    cat .nsprc
+    echo "##vso[task.setvariable variable=AuditExitCode;isoutput=true;]$?"
+    echo "npm-audit results:"
+    cat audit.txt
+  displayName: Run Better Audit
+  name: npmaudit
+#######################################################
+# Publish artifact to pipeline artifact
+#######################################################
+- publish: '$(System.DefaultWorkingDirectory)/${{ parameters.folder_name }}/audit.txt'
+  displayName: 'Drop NPM Audit'
+  artifact: dropNPMAudit
+#######################################################
+# Publish artifact to Azure artifact
+#######################################################
+- task: UniversalPackages@0
+  displayName: 'Publish NPM Audit'
+  inputs:
+    command: publish
+    vstsFeedPublish: ${{ parameters.artifacts_feed_name }}
+    vstsFeedPackagePublish: npm-audit
+    ${{ if ne(parameters.version, '*') }}:
+      versionOption: custom
+      # has to be always unique
+      versionPublish: ${{ parameters.version }}

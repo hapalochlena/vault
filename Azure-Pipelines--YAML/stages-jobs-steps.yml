@@ -1,0 +1,26 @@
+
+stage: # Pipeline Abschnitte sinnvoll sturkturieren, z.B. je eine Stage for Frontend, Backend; oder Stage für Build Code, Build Unit Tests...
+- stage: 
+  jobs: 
+  - job: # e.g. BuildApp, BuildBackendApp, DeployDev...
+    steps: #! 1 Job can have many TASKS = Steps
+    - script: # example task 'script'
+      displayName: 
+
+
+#! JOBS CAN RUN IN PARALLEL IF ORGANIZATION HAS ENOUGH BUILD AGENTS
+
+#! but can also define DEPENDENCIES for the Jobs & Stages
+
+stages:
+- stage:
+  dependsOn: #!
+  jobs:
+  - job: BuildFrontendApp
+    dependsOn: #!
+    displayName: Build Frontend App
+    steps:
+    - script:
+
+
+

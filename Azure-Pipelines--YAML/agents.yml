@@ -1,0 +1,15 @@
+
+# agent pool to use (public vs private/self-hosted) can be set ON LEVEL OF THE WHOLE PIPELINE or ON ANY OTHER LEVEL (STAGE, JOB, ...)
+
+parameters:
+  - name: private_pool # self-hosted
+    type: string
+    values:
+      - doo-ubuntu-agent-np # self-hosted
+      
+- job: e2e_run
+  dependsOn: e2e_prepare
+  displayName: "Run E2E ${{ parameters.folder_name }}"
+  pool: ${{ parameters.private_pool }} #!
+  steps:
+    ...

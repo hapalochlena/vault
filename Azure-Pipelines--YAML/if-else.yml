@@ -1,0 +1,7 @@
+
+variables:
+  - name: pool_name
+    ${{ if eq(parameters.variant, 'prod') }}:
+      value: doo-ubuntu-agent-p
+    ${{ else }}:
+      value: doo-ubuntu-agent-np
